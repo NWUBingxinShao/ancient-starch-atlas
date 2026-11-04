@@ -1,0 +1,7 @@
+* text=auto
+*.png -text
+*.jpg -text
+*.jpeg -text
+*.webp -text
+*.woff -text
+*.woff2 -text

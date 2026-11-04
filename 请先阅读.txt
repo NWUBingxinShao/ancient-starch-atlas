@@ -1,0 +1,1 @@
+﻿website/是Pages上传目录；r2/media/是R2上传目录（需--include-originals）。不要把整个项目或发布包根目录拖入Pages。config.js内mediaBaseUrl需要填实际图片服务域名根地址，否则高清原图尚不能在公网读取。详细步骤见项目的“低成本上线与数据存储指南.md”。本工具没有上传任何文件。

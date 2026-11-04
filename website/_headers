@@ -1,0 +1,10 @@
+/data/*
+  Cache-Control: no-cache
+/config.js
+  Cache-Control: no-cache
+/*.js
+  Cache-Control: no-cache
+/*.css
+  Cache-Control: no-cache
+/previews/*
+  Cache-Control: public, max-age=31536000, immutable

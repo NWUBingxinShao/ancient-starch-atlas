@@ -1,0 +1,7 @@
+{
+  "name": "starch-atlas-images",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-10-20",
+  "workers_dev": true,
+  "r2_buckets": [{"binding":"IMAGES","bucket_name":"starch-atlas-plates"}]
+}

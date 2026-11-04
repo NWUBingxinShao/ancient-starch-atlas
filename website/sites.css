@@ -1,0 +1,26 @@
+.site-paper-links{display:flex;flex-direction:column;gap:7px;margin:8px 0 15px}
+#map-view .site-paper-links .paper-link{color:var(--map-text);white-space:normal;overflow-wrap:anywhere;font-size:calc((11px) * var(--atlas-font-scale,1));text-align:left;line-height:1.7;padding:7px 0;border-bottom:1px solid var(--line)}
+.site-paper-links .provenance{display:block;margin:0 0 4px;font-size:calc((9px) * var(--atlas-font-scale,1));color:var(--map-muted)}
+.site-detail h4{font-size:calc((12px) * var(--atlas-font-scale,1));color:var(--map-text);margin:14px 0 7px}
+/* Map reading sizes; scale together with the existing Aa reading control. */
+#map-view .map-story>p{font-size:calc(15px * var(--atlas-font-scale,1));max-width:300px}
+#map-view .map-stats span{font-size:calc(12px * var(--atlas-font-scale,1))}
+#map-view .coordinate-legend{font-size:calc(12px * var(--atlas-font-scale,1));line-height:1.8;flex-wrap:wrap}
+#map-view .sidebar-head{font-size:calc(12px * var(--atlas-font-scale,1));line-height:1.6;letter-spacing:.5px;gap:10px}
+#map-view .sidebar-head>span:last-of-type{font-size:calc(11px * var(--atlas-font-scale,1))}
+#map-view .site-sidebar #site-search{font-size:calc(15px * var(--atlas-font-scale,1))}
+#map-view .site-sidebar .checkbox{font-size:calc(13px * var(--atlas-font-scale,1));line-height:1.8;align-items:flex-start}
+#map-view .site-list>button{font-size:calc(16px * var(--atlas-font-scale,1));min-height:50px;align-items:center;line-height:1.7}
+#map-view .site-list small{font-size:calc(12px * var(--atlas-font-scale,1));text-align:right;flex-shrink:0}
+#map-view .site-detail h3{font-size:calc(24px * var(--atlas-font-scale,1))}
+#map-view .site-detail p{font-size:calc(14px * var(--atlas-font-scale,1));line-height:1.9;overflow-wrap:anywhere}
+#map-view .site-detail h4{font-size:calc(16px * var(--atlas-font-scale,1))}
+#map-view .site-paper-links .paper-link{font-size:calc(14px * var(--atlas-font-scale,1));line-height:1.9}
+#map-view .site-paper-links .provenance{font-size:calc(12px * var(--atlas-font-scale,1));line-height:1.8}
+#map-view .site-detail .text-button,#map-view .site-close{font-size:calc(14px * var(--atlas-font-scale,1));line-height:1.8;min-height:40px}
+#map-view .rail-title strong{font-size:calc(12px * var(--atlas-font-scale,1));line-height:1.8}
+#map-view .map-bottom{font-size:calc(11px * var(--atlas-font-scale,1))}
+#map-tooltip{font-size:calc(14px * var(--atlas-font-scale,1));line-height:1.8}
+.masthead nav .credits-link{display:inline-flex;align-items:center;justify-content:center}
+@media(min-width:901px){#map-view .site-sidebar{width:clamp(300px,24vw,350px)}#map-view .map-controls{right:calc(3.5% + clamp(300px,24vw,350px) + 20px)}#map-view .atlas-rail{right:calc(3.5% + clamp(300px,24vw,350px) + 30px)}}
+@media(max-width:760px){#map-view .site-sidebar #site-search{font-size:calc(16px * var(--atlas-font-scale,1))}#map-view .site-list>button{min-height:52px}#map-view .map-stats span{font-size:calc(12px * var(--atlas-font-scale,1))}.masthead nav .credits-link{display:flex;flex-direction:column}}
