@@ -1,5 +1,5 @@
 {
-  "name": "ancient-starch-atlas",
+  "name": "ancient-starch-atlas"
   "main": "worker.mjs",
   "compatibility_date": "2026-10-20",
   "workers_dev": true,
