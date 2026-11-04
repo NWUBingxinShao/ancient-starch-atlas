@@ -1,4 +1,4 @@
-// Public, read-only gateway. R2 bucket itself may remain private.
+// Public website and read-only image gateway. R2 itself may remain private.
 function headers(object) {
   return new Headers({
     'Content-Type':'image/png','X-Content-Type-Options':'nosniff',
@@ -18,9 +18,13 @@ function byteRange(value,size) {
 export default {
   async fetch(request,env) {
     const url=new URL(request.url);
+    if(!url.pathname.startsWith('/media/')) {
+      return env.ASSETS ? env.ASSETS.fetch(request) : new Response('Not found',{status:404});
+    }
     if(!/^\/media\/[A-Za-z0-9_-]{1,180}\.png$/.test(url.pathname))return new Response('Not found',{status:404});
     if(request.method==='OPTIONS')return new Response(null,{status:204,headers:{'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'GET,HEAD,OPTIONS','Access-Control-Allow-Headers':'Range,If-None-Match'}});
     if(!['GET','HEAD'].includes(request.method))return new Response('Read only',{status:405,headers:{Allow:'GET, HEAD, OPTIONS'}});
+    if(!env.IMAGES)return new Response('Image storage is not configured',{status:503,headers:{'Access-Control-Allow-Origin':'*','Cache-Control':'no-store'}});
     const key=url.pathname.slice(1),rangeHeader=request.headers.get('Range'),etag=request.headers.get('If-None-Match');
     if(request.method==='HEAD'||rangeHeader||etag) {
       const meta=await env.IMAGES.head(key);

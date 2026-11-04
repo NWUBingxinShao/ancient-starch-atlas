@@ -29,7 +29,17 @@ const context={window:{}};
 vm.runInNewContext(await fs.readFile(path.join(web,'config.js'),'utf8'),context);
 const config=context.window.ATLAS_CONFIG,media=config?.mediaBaseUrl;
 if(!config||config.apiBaseUrl)problems.push('静态展示版的 apiBaseUrl 应为空。');
-if(!draft&&(!media||!/^https:\/\//.test(media)||/example\.(?:org|com|net)|你的|your-/i.test(media)||/\/media\/?$/.test(media)))problems.push('请先填写实际 mediaBaseUrl（HTTPS 根地址，末尾不带 /media）。');
+if(!draft&&media!=='/'&&(!media||!/^https:\/\//.test(media)||/example\.(?:org|com|net)|你的|your-/i.test(media)||/\/media\/?$/.test(media)))problems.push('请填写实际 mediaBaseUrl，或使用同站点图片根路径 /。');
+for(const relative of ['wrangler.jsonc','r2-worker/wrangler.jsonc']){
+ try{
+  const file=path.join(root,relative),deployment=JSON.parse(await fs.readFile(file,'utf8'));
+  if(deployment.name!=='ancient-starch-atlas')problems.push(`${relative} 的服务名称不符。`);
+  if(!deployment.r2_buckets?.some(b=>b.binding==='IMAGES'&&b.bucket_name==='starch-atlas-plates'))problems.push(`${relative} 缺少原图桶绑定。`);
+  if(deployment.assets?.binding!=='ASSETS'||!deployment.assets?.run_worker_first?.includes('/media/*'))problems.push(`${relative} 未将原图请求路由至 Worker。`);
+  if(path.resolve(path.dirname(file),deployment.assets?.directory||'')!==web)problems.push(`${relative} 的网页目录不符。`);
+  await fs.access(path.resolve(path.dirname(file),deployment.main));
+ }catch(error){problems.push(`${relative} 配置无效：${error.message}`);}
+}
 const catalog=JSON.parse(await fs.readFile(path.join(web,'data/catalog.json'),'utf8'));
 const manifest=JSON.parse(await fs.readFile(path.join(root,'待上传原图清单.json'),'utf8'));
 if(catalog.figures.length!==manifest.length)problems.push('公开图版数量与原图清单不一致。');

@@ -1,0 +1,18 @@
+{
+  "name": "ancient-starch-atlas",
+  "main": "r2-worker/worker.mjs",
+  "compatibility_date": "2026-10-20",
+  "workers_dev": true,
+  "preview_urls": false,
+  "assets": {
+    "directory": "./website",
+    "binding": "ASSETS",
+    "run_worker_first": ["/media/*"]
+  },
+  "r2_buckets": [
+    {
+      "binding": "IMAGES",
+      "bucket_name": "starch-atlas-plates"
+    }
+  ]
+}
