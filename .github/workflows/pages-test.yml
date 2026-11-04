@@ -4,12 +4,19 @@ name: Deploy GitHub Pages
 on:
   push:
     branches: [main]
+    paths:
+      - "website/**"
+      - ".github/workflows/pages-test.yml"
   workflow_dispatch:
 
 permissions:
   contents: read
   pages: write
   id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
 
 jobs:
   deploy:
@@ -18,11 +25,22 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure R2 image source
+        run: |
+          sed -i 's#"mediaBaseUrl": "/"#"mediaBaseUrl": "https://ancient-starch-atlas.jiyun2485190686.workers.dev"#' website/config.js
+          grep mediaBaseUrl website/config.js
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload website
+        uses: actions/upload-pages-artifact@v4
         with:
           path: ./website
+
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
