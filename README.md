@@ -27,9 +27,13 @@ Git 集成后，推送 `main` 会触发网页更新。功能修改可先使用�
 
 ## 高清图片配置
 
-当前 `website/config.js` 的 `mediaBaseUrl` 尚为空，因此这还是上线准备版本，高清图服务尚未接通。
+`website/config.js` 已配置图片服务 `https://ancient-starch-atlas.jiyun2485190686.workers.dev`，服务名为 `ancient-starch-atlas`，绑定 `starch-atlas-plates` 桶。网页本身仍需创建 Cloudflare Pages 项目进行部署。
 
-1. 创建 R2 Standard 桶，将原图上传为清单中的 `media/<图版ID>.png` 对象键。
+图片 Worker 的 Cloudflare 构建设置：根目录 `r2-worker`、Build command 留空、Deploy command 为 `npx wrangler deploy`。仓库内 Worker 名称已与线上服务统一，并关闭版本预览 URL。
+
+已验证 628 个图片地址的状态与文件大小，4 幅原图下载后的 SHA-256 与本地一致，分段读取检查通过。
+
+1. 图片按清单中的 `media/<图版ID>.png` 对象键存储在 R2 Standard 桶。
 2. 按 `r2-worker/wrangler.jsonc` 配置 `IMAGES` 绑定并部署只读 Worker，或使用绑定自有域名的 R2 图片服务。
 3. 在 `website/config.js` 将 `mediaBaseUrl` 设置为实际 HTTPS 根地址，例如 `https://images.example.org`，末尾不带 `/media`。
 4. `apiBaseUrl` 保持为空；`catalogUrl` 保持 `data/catalog.json`。

@@ -1,7 +1,13 @@
 {
-  "name": "starch-atlas-images",
+  "name": "ancient-starch-atlas",
   "main": "worker.mjs",
   "compatibility_date": "2026-10-20",
   "workers_dev": true,
-  "r2_buckets": [{"binding":"IMAGES","bucket_name":"starch-atlas-plates"}]
+  "r2_buckets": [
+    {
+      "binding": "IMAGES",
+      "bucket_name": "starch-atlas-plates"
+    }
+  ],
+  "preview_urls": false
 }
