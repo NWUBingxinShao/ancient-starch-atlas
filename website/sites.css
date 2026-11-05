@@ -18,6 +18,9 @@
 #map-view .site-paper-links .paper-link{font-size:calc(14px * var(--atlas-font-scale,1));line-height:1.9}
 #map-view .site-paper-links .provenance{font-size:calc(12px * var(--atlas-font-scale,1));line-height:1.8}
 #map-view .site-detail .text-button,#map-view .site-close{font-size:calc(14px * var(--atlas-font-scale,1));line-height:1.8;min-height:40px}
+#map-view .site-back{grid-column:1/-1;align-self:flex-start;min-height:40px;margin:0 0 6px;color:var(--map-text)}
+#map-view .site-back[hidden],#map-view .site-sidebar:has(.site-detail:not([hidden])) .site-list{display:none}
+#map-view .site-list small{max-width:55%}
 #map-view .rail-title strong{font-size:calc(12px * var(--atlas-font-scale,1));line-height:1.8}
 #map-view .map-bottom{font-size:calc(11px * var(--atlas-font-scale,1))}
 #map-tooltip{font-size:calc(14px * var(--atlas-font-scale,1));line-height:1.8}

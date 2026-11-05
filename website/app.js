@@ -50,8 +50,10 @@ function updateLanguage(){
  text($('#empty h2'),t('未找到匹配的图版','No matching plates'));text($('#empty p'),t('试试文献编号、拉丁名，或减少筛选条件。','Try a paper ID, a Latin name, or fewer filters.'));text($('#empty-reset'),t('清除筛选','Clear filters'));
  $('#map-china').title=t('恢复中国范围','Reset China extent');
  $('#site-search').placeholder=t('查找中国遗址…','Find a site in China…');
+ text($('#site-back'),t('← 返回遗址列表','← Back to site list'));
  text($('#about-counts'),t(`${data.papers.length}条题录、${new Set(data.papers.map(p=>p.id)).size}个文献编号、${data.figures.length}幅收录图版；${data.sites.length}处定位记录。不同PDF版本保留独立键。`,`${data.papers.length} PDF records, ${new Set(data.papers.map(p=>p.id)).size} paper numbers, ${data.figures.length} selected plates; ${data.sites.length} site records. Alternative PDF versions retain separate keys.`));
  renderMapFeatures();render();if(detail)renderDetail();if(mapReady)renderSiteList();
+ if(selectedSite)renderSiteDetail(siteById.get(selectedSite));
 }
 const patterns={starch:/淀粉|starch/i,phytolith:/植硅体|phytolith/i,fungi:/真菌|酵母|霉|发酵|fung|yeast|ferment|mould|mold/i,tools:/石器|石刀|磨盘|磨棒|陶器|蚌器|grind|tool|pottery|vessel|milling/i,calculus:/牙结石|牙齿|人牙|dental|calculus|teeth|tooth/i};
 function filter(){
@@ -94,11 +96,16 @@ function matchingPapers(){
  const keys=new Set(filtered.map(f=>f.paper_key));const tokens=normalized(state.q).split(' ').filter(Boolean);
  return data.papers.filter(p=>keys.has(p.key)||($('#all-literature').checked&&!p.figure_ids.length&&!state.site&&!state.type&&!researchTools?.hasFilters()&&(!state.year||Math.floor(Number(p.year)/10)*10===Number(state.year))&&(!state.sourceLanguage||p.language===state.sourceLanguage)&&tokens.every(q=>normalized([p.id,p.title_zh,p.title_en,p.citation_original].join(' ')).includes(q))));
 }
+function appendPaperLibraryStatus(parent,paper){
+ if(!paper.figure_ids.length&&paper.library_status!=='候选图已排除或合并，无保留项'){
+  parent.append(el('p','library-status',paper.library_status||t('暂无入选图版','No selected plates')));
+ }
+}
 function renderPapers(){
  const list=$('#paper-list');list.replaceChildren();const papers=matchingPapers();text($('#result-count'),t(`${papers.length} 条题录`,`${papers.length} bibliography records`));
  for(const p of papers){
   const row=el('article','paper-row'),content=el('div'),link=el('button','paper-link');link.append(el('h3','',title(p)));link.onclick=()=>openPaper(p.key);
-  content.append(link,el('p','',otherTitle(p)),el('p','citation',p.citation_original));if(!p.figure_ids.length)content.append(el('p','library-status',p.library_status||'暂无入选图版'));
+  content.append(link,el('p','',otherTitle(p)),el('p','citation',p.citation_original));appendPaperLibraryStatus(content,p);
   const btn=el('button','outline',p.figure_ids.length?t(`${p.figure_ids.length} 幅图版 ↗`,`${p.figure_ids.length} plates ↗`):t('查看题录 ↗','View record ↗'));btn.onclick=()=>openPaper(p.key);
   row.append(el('span','paper-id',p.id),content,btn);list.append(row);
  }
@@ -140,7 +147,7 @@ function openPaper(key){
  const acts=el('div','source-actions'),cp=el('button','text-button',t('复制原始题录','Copy original citation'));cp.onclick=()=>copy(p.citation_original);acts.append(cp);
  const doi=doiUrl(p.doi);if(doi){const a=el('a','', 'DOI ↗');a.href=doi;a.target='_blank';a.rel='noopener';acts.append(a)}
  const exportBtn=el('button','text-button',t('下载双语图注 TXT','Download bilingual captions'));exportBtn.onclick=()=>downloadPaper(p);acts.append(exportBtn);c.append(acts,el('p','provenance',t('新增译题为辅助译题，非官方译名。','Translated titles are provided for discovery, not official titles.')));
- if(!p.figure_ids.length)c.append(el('p','library-status',p.library_status||'暂无入选图版'));
+ appendPaperLibraryStatus(c,p);
  if(p.alias_of){const alias=paperByKey.get(p.alias_of),link=el('button','primary',t('查看同文献已收录的图版 →','View plates under the canonical record →'));link.onclick=()=>{$('#paper-dialog').close();openPaper(alias.key)};c.append(link)}
  if(p.site_links?.length){const sites=el('div','related-figures');for(const assoc of p.site_links){const s=siteById.get(assoc.site_id);if(!s)continue;const b=el('button','',s.name+(assoc.role==='vessel_comparison'?t('（器物比较）',' (vessel comparison)'):''));b.onclick=()=>{$('#paper-dialog').close();setView('map');selectSite(s)};sites.append(b)}c.append(el('h3','',t('研究材料与遗址','Study materials and sites')),sites)}
  const grid=el('div','paper-mini-grid');for(const id of p.figure_ids){const f=figureById.get(id),b=el('button');b.append(makeImage(f),el('span','',t('图 ','Fig. ')+f.number+' · '+label(f)));b.onclick=()=>{$('#paper-dialog').close();openFigure(id)};grid.append(b)}c.append(grid);$('#paper-dialog').showModal();
@@ -191,12 +198,66 @@ function drawMap(){
 }
 window.addEventListener('atlas-theme-change',()=>drawMap());
 window.addEventListener('atlas-font-change',()=>drawMap());
-function renderSiteList(){const sites=visibleSites();if(selectedSite&&!sites.some(s=>s.id===selectedSite)){$('#site-detail').hidden=true;selectedSite=null}text($('#site-count'),sites.length+' SITES');const list=$('#site-list');list.replaceChildren();for(const s of sites){const b=el('button');b.append(el('span','',s.name),el('small','',s.approximate?t('近似点','Approx.'):s.kind?.startsWith('A')?t('原文坐标','Source coord.'):t('文献坐标','Literature coord.')));b.onclick=()=>selectSite(s);b.onmouseenter=()=>{hoverSite=s.id;drawMap()};b.onmouseleave=()=>{hoverSite=null;drawMap()};list.append(b)}drawMap();mobileTools?.render()}
+function coordinateSource(site){
+ const kind=site.kind||'';
+ if(kind.includes('范围中点'))return t('论文范围中点','Midpoint of published range');
+ if(site.approximate){
+  if(kind.startsWith('B 论文报告'))return t('论文坐标（近似）','Approximate paper coordinates');
+  return t('邻近区域估算','Estimated from nearby area');
+ }
+ if(kind.startsWith('A')||(kind==='人工维护坐标'&&site.notes?.startsWith('原文')))return t('原论文坐标','Original paper coordinates');
+ return t('其他文献坐标','Other published coordinates');
+}
+let siteListScroll=0;
+function clearSiteSelection(){
+ selectedSite=null;
+ hoverSite=null;
+ $('#site-detail').hidden=true;
+ $('#site-back').hidden=true;
+ $('#site-list').scrollTop=siteListScroll;
+}
+function renderSiteList(){
+ const sites=visibleSites();
+ if(selectedSite&&!sites.some(s=>s.id===selectedSite))clearSiteSelection();
+ text($('#site-count'),sites.length+' SITES');
+ const list=$('#site-list'),scroll=list.scrollTop;
+ list.replaceChildren();
+ for(const s of sites){
+  const b=el('button');
+  b.dataset.siteId=s.id;
+  b.append(el('span','',s.name),el('small','',coordinateSource(s)));
+  b.onclick=()=>selectSite(s);
+  b.onmouseenter=()=>{hoverSite=s.id;drawMap()};
+  b.onmouseleave=()=>{hoverSite=null;drawMap()};
+  list.append(b);
+ }
+ list.scrollTop=scroll;
+ drawMap();
+ mobileTools?.render();
+}
 function selectSite(s){
- selectedSite=s.id;const point=project(s.lon,s.lat);mapScale=Math.max(mapScale,3);mapX=mapWidth/2-point[0]*mapScale;mapY=mapHeight/2-point[1]*mapScale;const node=$('#site-detail');node.hidden=false;node.replaceChildren();node.append(el('h3','',s.name),el('p','',s.kind+' · '+s.object),el('p','',`${Number(s.lat.toFixed(6))}°, ${Number(s.lon.toFixed(6))}° · ${s.crs}`),el('p','',t('来源：','Source: ')+s.source),el('p','',s.status));if(s.notes)node.append(el('p','',s.notes));
+ if(!selectedSite)siteListScroll=$('#site-list').scrollTop;
+ selectedSite=s.id;
+ const point=project(s.lon,s.lat);
+ mapScale=Math.max(mapScale,3);
+ mapX=mapWidth/2-point[0]*mapScale;
+ mapY=mapHeight/2-point[1]*mapScale;
+ renderSiteDetail(s);
+ $('#site-detail').scrollTop=0;
+ mobileTools?.siteSelected();
+ $('#site-back').focus({preventScroll:true});
+ drawMap();
+}
+function renderSiteDetail(s){
+ const node=$('#site-detail');
+ node.hidden=false;
+ $('#site-back').hidden=false;
+ node.replaceChildren();
+ node.append(el('h3','',s.name),el('p','',coordinateSource(s)),el('p','',`${Number(s.lat.toFixed(6))}°, ${Number(s.lon.toFixed(6))}°`));
+ if(s.source)node.append(el('p','',t('来源：','Source: ')+s.source));
  const papers=(s.paper_keys||[]).map(key=>paperByKey.get(key)).filter(Boolean);node.append(el('h4','',t(`相关文献 ${papers.length} 篇`,`Related papers (${papers.length})`)));
- const paperList=el('div','site-paper-links');for(const p of papers){const link=el('button','paper-link',p.id+' · '+title(p));const assoc=p.site_links?.find(a=>a.site_id===s.id);link.onclick=()=>openPaper(p.key);paperList.append(link);if(assoc?.role==='vessel_comparison')paperList.append(el('small','provenance',t('器物比较；本址未作本次残留物检测','Vessel comparison; not sampled for residues in this study')));if(assoc?.evidence?.length)paperList.append(el('small','provenance',t('原PDF第 ','Source PDF p. ')+assoc.evidence.map(e=>e.page).filter(Boolean).join(', ')));}node.append(paperList);
- const figs=data.figures.filter(f=>f.sites.includes(s.id));node.append(el('p','provenance',t('图版关联包含多遗址汇总组图；现代参照分图不据此视为遗址材料。','Links may include pooled multi-site plates; modern reference panels remain reference material.')));const b=el('button','text-button',figs.length?t(`查看材料关联的 ${figs.length} 幅图版 →`,`View ${figs.length} material-related plates →`):t('当前收录图版暂无材料关联','No material-related plates in this selection'));b.disabled=!figs.length;b.onclick=()=>{state.site=s.id;state.page=1;setView('plates')};node.append(b);const close=el('button','site-close',t('关闭详情 ×','Close ×'));close.onclick=()=>{node.hidden=true;selectedSite=null;drawMap()};node.append(close);const minis=el('div','site-miniatures');for(const f of figs.slice(0,3)){const item=el('button');item.append(makeImage(f));item.onclick=()=>openFigure(f.id);minis.append(item)}node.append(minis);drawMap();mobileTools?.siteSelected();
+ const paperList=el('div','site-paper-links');for(const p of papers){const link=el('button','paper-link',p.id+' · '+title(p));const assoc=p.site_links?.find(a=>a.site_id===s.id);link.onclick=()=>openPaper(p.key);paperList.append(link);if(assoc?.role==='vessel_comparison')paperList.append(el('small','provenance',t('器物比较','Vessel comparison')));if(assoc?.evidence?.length)paperList.append(el('small','provenance',t('原PDF第 ','Source PDF p. ')+assoc.evidence.map(e=>e.page).filter(Boolean).join(', ')));}node.append(paperList);
+ const figs=data.figures.filter(f=>f.sites.includes(s.id));const b=el('button','text-button',figs.length?t(`查看材料关联的 ${figs.length} 幅图版 →`,`View ${figs.length} material-related plates →`):t('当前收录图版暂无材料关联','No material-related plates in this selection'));b.disabled=!figs.length;b.onclick=()=>{state.site=s.id;state.page=1;setView('plates')};node.append(b);const minis=el('div','site-miniatures');for(const f of figs.slice(0,3)){const item=el('button');item.append(makeImage(f));item.onclick=()=>openFigure(f.id);minis.append(item)}node.append(minis);
 }
 function zoomMap(factor,x=mapWidth/2,y=mapHeight/2){const scale=Math.min(150,Math.max(.3,mapScale*factor));const ratio=scale/mapScale;mapX=x-(x-mapX)*ratio;mapY=y-(y-mapY)*ratio;mapScale=scale;drawMap()}
 function bind(){
@@ -217,7 +278,20 @@ function bind(){
  bindPanZoom(stage,{getTransform:()=>({scale:imageScale,x:imageX,y:imageY}),setTransform:p=>{imageScale=p.scale;imageX=p.x;imageY=p.y;imageTransform()},minScale:.5,maxScale:10,centered:true,blocked:()=>stage.classList.contains('panel-marking')});
  $('#compare-clear').onclick=()=>{state.compare.clear();updateCompare();if(state.view==='plates')renderGrid()};$('#compare-open').onclick=openCompare;
  document.addEventListener('keydown',e=>{const editing=['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)||document.activeElement.isContentEditable;if(e.key==='/'&&!editing&&!document.querySelector('dialog[open]')){e.preventDefault();$('#search').focus()}if($('#detail-dialog').open&&!$('#paper-dialog').open&&!$('#library-dialog')?.open&&!$('#plate-citation-dialog')?.open&&!editing){if(e.key==='ArrowLeft')stepFigure(-1);if(e.key==='ArrowRight')stepFigure(1)}});
- $('#map-china').onclick=()=>fitMap([73,16,136,55]);$('#map-world').onclick=()=>fitMap([73,16,136,55]);$('#zoom-in').onclick=()=>zoomMap(1.5);$('#zoom-out').onclick=()=>zoomMap(1/1.5);$('#site-search').oninput=renderSiteList;$('#approximate').onchange=renderSiteList;
+ $('#map-china').onclick=()=>fitMap([73,16,136,55]);$('#map-world').onclick=()=>fitMap([73,16,136,55]);$('#zoom-in').onclick=()=>zoomMap(1.5);$('#zoom-out').onclick=()=>zoomMap(1/1.5);
+ $('#site-search').oninput=()=>{
+  siteListScroll=0;
+  clearSiteSelection();
+  renderSiteList();
+ };
+ $('#approximate').onchange=renderSiteList;
+ $('#site-back').onclick=()=>{
+  const previous=selectedSite;
+  clearSiteSelection();
+  const button=[...$('#site-list').children].find(item=>item.dataset.siteId===previous);
+  (button||$('#site-search')).focus({preventScroll:true});
+  drawMap();
+ };
  const canvas=$('#map');canvas.onwheel=e=>{e.preventDefault();const r=canvas.getBoundingClientRect();zoomMap(e.deltaY<0?1.15:1/1.15,e.clientX-r.left,e.clientY-r.top)};
  bindPanZoom(canvas,{getTransform:()=>({scale:mapScale,x:mapX,y:mapY}),setTransform:p=>{mapScale=p.scale;mapX=p.x;mapY=p.y;drawMap()},minScale:.3,maxScale:150,
   onHover:e=>{const r=canvas.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,dot=mapDots.find(d=>Math.hypot(d.x-x,d.y-y)<d.r+7);canvas.style.cursor=dot?'pointer':'grab';const tip=$('#map-tooltip');tip.hidden=!dot;if(dot){text(tip,dot.group.map(p=>p.s.name).join(' · '));tip.style.left=Math.min(x+16,mapWidth-220)+'px';tip.style.top=Math.max(10,y-30)+'px'}},
@@ -255,7 +329,6 @@ async function applyFreshCatalog(fresh){
  if(previousDetail&&!detail){$('#detail-dialog').close();$('#detail-image').removeAttribute('src');}
  if(wasCompare){$('#compare-dialog').close();if(state.compare.size===2)openCompare();}updateCompare();
  await researchTools?.refreshIndex();updateLanguage();
- if(selectedSite){const site=siteById.get(selectedSite);if(site){const pos=[mapX,mapY,mapScale];selectSite(site);[mapX,mapY,mapScale]=pos;drawMap();}else{selectedSite=null;$('#site-detail').hidden=true;}}
  notify(previousDetail&&!detail?t('此图版已下架，目录已同步更新','This plate was withdrawn; the catalog has been updated'):t('已同步后台发布的最新目录','Published catalog changes are now visible'));
 }
 
