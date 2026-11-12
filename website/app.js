@@ -171,10 +171,16 @@ function resizeMap(){const canvas=$('#map');if(!canvas||$('#map-view').hidden)re
 function visibleSites(){let sites=data.sites.filter(s=>(s.association_status!=='no_verified_study_link')&&($('#approximate').checked||!s.approximate));const q=normalized($('#site-search').value);if(q)sites=sites.filter(s=>normalized([s.name,s.object,s.source,...(s.paper_keys||[]).map(key=>{const p=paperByKey.get(key);return p?[p.id,p.title_zh,p.title_en].join(' '):''})].join(' ')).includes(q));if(state.q||state.year||state.type||state.sourceLanguage||researchTools?.hasFilters()){const associated=new Set(filtered.flatMap(f=>f.sites));sites=sites.filter(s=>associated.has(s.id)||normalized(s.name).includes(normalized(state.q))&&state.q)}return sites}
 function drawMap(){
  if(!mapReady||!mapWidth)return;const palette=getComputedStyle(document.documentElement),color=name=>palette.getPropertyValue('--map-'+name).trim();const canvas=$('#map'),ctx=canvas.getContext('2d');ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);ctx.clearRect(0,0,mapWidth,mapHeight);ctx.fillStyle=color('bg');ctx.fillRect(0,0,mapWidth,mapHeight);
- const fontScale=Number(palette.getPropertyValue('--atlas-font-scale'))||1,typography=mapTypography(mapScale/mapReferenceScale,fontScale),coordinateSize=typography.coordinate,labelSize=typography.label,clusterSize=typography.cluster;
+ const fontScale=Number(palette.getPropertyValue('--atlas-font-scale'))||1,typography=mapTypography(mapScale/mapReferenceScale,fontScale),labelSize=typography.label,clusterSize=typography.cluster;
  const screen=p=>[p[0]*mapScale+mapX,p[1]*mapScale+mapY];ctx.strokeStyle=color('grid');ctx.lineWidth=.6;ctx.textBaseline='alphabetic';
- for(let lon=-180;lon<=180;lon+=20){const [x]=screen(project(lon,0));ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,mapHeight);ctx.stroke();if(x>65&&x<mapWidth-35){ctx.fillStyle=color('coordinate');ctx.font=`${coordinateSize}px "Segoe UI",sans-serif`;ctx.textAlign='center';ctx.fillText(Math.abs(lon)+'°'+(lon<0?'W':lon>0?'E':''),x,coordinateSize+8)}}
- for(let lat=-80;lat<=80;lat+=20){const [,y]=screen(project(0,lat));ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(mapWidth,y);ctx.stroke();if(y>110&&y<mapHeight-35){ctx.fillStyle=color('coordinate');ctx.font=`${coordinateSize}px "Segoe UI",sans-serif`;ctx.textAlign='left';ctx.fillText(Math.abs(lat)+'°'+(lat<0?'S':lat>0?'N':''),8,y-5)}}
+ for(let lon=-180;lon<=180;lon+=20){
+  const [x]=screen(project(lon,0));
+  ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,mapHeight);ctx.stroke();
+ }
+ for(let lat=-80;lat<=80;lat+=20){
+  const [,y]=screen(project(0,lat));
+  ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(mapWidth,y);ctx.stroke();
+ }
  ctx.fillStyle=color('land');ctx.strokeStyle=color('coast');ctx.lineWidth=1;ctx.shadowBlur=25;ctx.shadowColor=color('glow');
  for(const rings of land){ctx.beginPath();for(const ring of rings){ring.forEach((p,i)=>{const [x,y]=screen(p);i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.closePath()}ctx.fill('evenodd');ctx.stroke()}
  ctx.shadowBlur=0;const points=[];for(const s of visibleSites()){const [x,y]=screen(project(s.lon,s.lat));if(x< -20||x>mapWidth+20||y< -20||y>mapHeight+20)continue;points.push({s,x,y})}
@@ -252,7 +258,7 @@ function renderSiteDetail(s){
  node.hidden=false;
  $('#site-back').hidden=false;
  node.replaceChildren();
- node.append(el('h3','',s.name),el('p','',coordinateSource(s)),el('p','',`${Number(s.lat.toFixed(6))}°, ${Number(s.lon.toFixed(6))}°`));
+ node.append(el('h3','',s.name),el('p','',coordinateSource(s)));
  if(s.source)node.append(el('p','',t('来源：','Source: ')+s.source));
  const papers=(s.paper_keys||[]).map(key=>paperByKey.get(key)).filter(Boolean);node.append(el('h4','',t(`相关文献 ${papers.length} 篇`,`Related papers (${papers.length})`)));
  const paperList=el('div','site-paper-links');for(const p of papers){const link=el('button','paper-link',p.id+' · '+title(p));const assoc=p.site_links?.find(a=>a.site_id===s.id);link.onclick=()=>openPaper(p.key);paperList.append(link);if(assoc?.role==='vessel_comparison')paperList.append(el('small','provenance',t('器物比较','Vessel comparison')));if(assoc?.evidence?.length)paperList.append(el('small','provenance',t('原PDF第 ','Source PDF p. ')+assoc.evidence.map(e=>e.page).filter(Boolean).join(', ')));}node.append(paperList);

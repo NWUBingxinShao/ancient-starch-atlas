@@ -11,3 +11,5 @@
 @media(max-width:430px){.credits-header nav a{font-size:11px}.credits-brand small{font-size:6px}.credits-intro{max-width:170px;font-size:11px}.player-controls button{padding:8px 9px;font-size:11px}.credits-brand{font-size:12px}}
 @media(max-height:650px){.credits-overview{padding-top:8px;padding-bottom:8px}.credits-overview .eyebrow{display:none}.credits-header{min-height:52px;padding-top:7px;padding-bottom:7px}.credits-footer{padding-top:5px;padding-bottom:calc(5px + env(safe-area-inset-bottom))}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+.credits-footer{flex-wrap:wrap}

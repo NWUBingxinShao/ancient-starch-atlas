@@ -27,3 +27,6 @@
 .masthead nav .credits-link{display:inline-flex;align-items:center;justify-content:center}
 @media(min-width:901px){#map-view .site-sidebar{width:clamp(300px,24vw,350px)}#map-view .map-controls{right:calc(3.5% + clamp(300px,24vw,350px) + 20px)}#map-view .atlas-rail{right:calc(3.5% + clamp(300px,24vw,350px) + 30px)}}
 @media(max-width:760px){#map-view .site-sidebar #site-search{font-size:calc(16px * var(--atlas-font-scale,1))}#map-view .site-list>button{min-height:52px}#map-view .map-stats span{font-size:calc(12px * var(--atlas-font-scale,1))}.masthead nav .credits-link{display:flex;flex-direction:column}}
+
+.site-registration{padding:10px 16px;text-align:center;font-size:12px;line-height:1.8;color:var(--muted);background:var(--paper)}
+.site-registration a{display:inline-block;padding:4px 0}
