@@ -6,11 +6,11 @@
   <meta name="color-scheme" content="dark light"><title>淀粉粒考古图版库 · Starch Atlas</title>
   <script src="theme.js"></script><script src="reading.js?v=20261027"></script>
   <link rel="icon" href="assets/mark.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css">
-<link rel="stylesheet" href="explore.css"><link rel="stylesheet" href="theme.css"><link rel="stylesheet" href="research.css"><link rel="stylesheet" href="mobile.css?v=20261024"><link rel="stylesheet" href="reading.css?v=20261027"><link rel="stylesheet" href="sites.css?v=20261112-icp2"></head>
+<link rel="stylesheet" href="explore.css"><link rel="stylesheet" href="theme.css"><link rel="stylesheet" href="research.css"><link rel="stylesheet" href="mobile.css?v=20261024"><link rel="stylesheet" href="reading.css?v=20261027"><link rel="stylesheet" href="sites.css?v=20261112-desktop-icp"></head>
 <body data-view="map">
 <a class="skip" href="#main">跳至图版</a>
 <header class="masthead">
- <a class="brand" href="#map" aria-label="淀粉粒考古图版库首页"><img src="assets/mark.svg" width="38" height="38" alt=""><span>淀粉粒考古图版库<small>STARCH ATLAS / 中国植物考古图像档案</small></span></a>
+ <a class="brand" href="#map" aria-label="淀粉粒考古图版库首页"><img src="assets/mark.svg" width="38" height="38" alt=""><span>淀粉粒考古图版库<small>STARCH ATLAS / 国内植物考古图像档案</small></span></a>
  <nav aria-label="主导航"><button class="nav active" data-view="map" data-zh="遗址探索" data-en="Explore">遗址探索</button><button class="nav" data-view="plates" data-zh="图版档案" data-en="Plates">图版档案</button><button class="nav" data-view="papers" data-zh="文献目录" data-en="Literature">文献目录</button><a class="nav credits-link" href="credits.html" data-zh="致谢" data-en="Credits">致谢</a></nav>
  <div class="header-actions"><button id="about" class="quiet" data-zh="关于资料库" data-en="About">关于资料库</button><button id="theme-toggle" class="theme-toggle" type="button" aria-label="切换深色或浅色背景" aria-pressed="false"><span aria-hidden="true">◐</span><span class="theme-label">背景</span></button><button id="language" class="lang" aria-label="Switch language">EN <span>⇄</span> 中</button></div>
 </header>
@@ -25,13 +25,13 @@
   <div id="active-filters" class="active-filters"></div>
   <section id="plates-view" hidden aria-label="图版检索结果"><div id="grid" class="plate-grid"></div><div id="empty" class="empty" hidden><h2>未找到匹配的图版</h2><p>试试文献编号、拉丁名，或减少筛选条件。</p><button class="primary" id="empty-reset">清除筛选</button></div><div class="pagination"><button id="prev-page" class="outline">← 上一页</button><span id="page-label"></span><button id="next-page" class="outline">下一页 →</button></div></section>
   <section id="papers-view" hidden aria-label="文献目录"><div class="section-heading"><div><h2 data-zh="文献目录" data-en="Source literature">文献目录</h2></div></div><div class="bibliography-tools"><label><input id="all-literature" type="checkbox" checked> <span data-zh="包含无图版文献" data-en="Include papers without plates">包含无图版文献</span></label></div><div id="paper-list"></div></section>
-  <section id="map-view" aria-label="中国遗址交互地图">
-    <div class="map-layout"><div class="map-wrap"><canvas id="map" tabindex="0" aria-label="中国遗址地图，可拖动缩放，亦可从遗址列表选择"></canvas><div id="map-tooltip" class="map-tooltip" hidden></div></div>
-      <div class="map-story"><div class="eyebrow">THE MICROSCOPIC PAST / CHINA</div><h1 data-zh="一颗淀粉，
+  <section id="map-view" aria-label="国内遗址交互地图">
+    <div class="map-layout"><div class="map-wrap"><canvas id="map" tabindex="0" aria-label="国内遗址地图，可拖动缩放，亦可从遗址列表选择"></canvas><div id="map-tooltip" class="map-tooltip" hidden></div></div>
+      <div class="map-story"><div class="eyebrow">THE MICROSCOPIC PAST / SITES</div><h1 data-zh="一颗淀粉，
 一部生活史。" data-en="Small grains.
-Human stories.">一颗淀粉，<br>一部生活史。</h1><p data-zh="从中国遗址出发，探索植物、器物与古人的日常。" data-en="Explore plants, tools and everyday life through archaeological sites in China.">从中国遗址出发，<br>探索植物、器物与古人的日常。</p><button id="explore-plates" class="map-cta" data-zh="进入全部图版 ↗" data-en="Explore all plates ↗">进入全部图版 ↗</button><div class="map-stats" id="map-stats"></div><div class="coordinate-legend"><i></i> <span data-zh="文献坐标" data-en="Published coordinates">文献坐标</span> <i class="hollow"></i> <span data-zh="近似位置" data-en="Approximate location">近似位置</span></div></div>
-      <aside class="site-sidebar"><div class="sidebar-head"><span>CHINA / 遗址索引</span><span id="site-count"></span></div><input id="site-search" type="search" placeholder="查找中国遗址…" aria-label="筛选遗址名称"><label class="checkbox"><input id="approximate" type="checkbox" checked><span data-zh="显示近似位置" data-en="Show approximate locations">显示近似位置</span></label><button id="site-back" class="text-button site-back" type="button" aria-controls="site-list" hidden>← 返回遗址列表</button><div id="site-detail" class="site-detail" hidden></div><div id="site-list" class="site-list"></div></aside>
-      <div class="map-controls"><button id="zoom-in" aria-label="地图放大">＋</button><button id="zoom-out" aria-label="地图缩小">−</button><button id="map-china" aria-label="恢复中国范围">⌖</button><button id="map-world" hidden>中国范围</button></div>
+Human stories.">一颗淀粉，<br>一部生活史。</h1><p data-zh="从国内遗址出发，探索植物、器物与古人的日常。" data-en="Explore plants, tools and everyday life through domestic archaeological sites.">从国内遗址出发，<br>探索植物、器物与古人的日常。</p><button id="explore-plates" class="map-cta" data-zh="进入全部图版 ↗" data-en="Explore all plates ↗">进入全部图版 ↗</button><div class="map-stats" id="map-stats"></div><div class="coordinate-legend"><i></i> <span data-zh="文献坐标" data-en="Published coordinates">文献坐标</span> <i class="hollow"></i> <span data-zh="近似位置" data-en="Approximate location">近似位置</span></div></div>
+      <aside class="site-sidebar"><div class="sidebar-head"><span>SITES / 遗址索引</span><span id="site-count"></span></div><input id="site-search" type="search" placeholder="查找国内遗址…" aria-label="筛选遗址名称"><label class="checkbox"><input id="approximate" type="checkbox" checked><span data-zh="显示近似位置" data-en="Show approximate locations">显示近似位置</span></label><button id="site-back" class="text-button site-back" type="button" aria-controls="site-list" hidden>← 返回遗址列表</button><div id="site-detail" class="site-detail" hidden></div><div id="site-list" class="site-list"></div></aside>
+      <div class="map-controls"><button id="zoom-in" aria-label="地图放大">＋</button><button id="zoom-out" aria-label="地图缩小">−</button><button id="map-china" aria-label="恢复国内范围">⌖</button><button id="map-world" hidden>国内范围</button></div>
       <div class="atlas-rail"><div class="rail-title"><span>FROM SITE TO SLIDE</span><strong data-zh="让微观证据，回到历史现场。" data-en="Connect the site with the slide.">让微观证据，回到历史现场。</strong></div><div id="map-featured" class="map-featured"></div></div>
       <div class="map-bottom"><span>Natural Earth · 自然陆地轮廓，无行政边界</span><span>拖动平移 / 滚轮缩放 / 点击遗址</span><span>ARCHIVE EDITION · 2026</span></div>
     </div>
@@ -46,5 +46,5 @@ Human stories.">一颗淀粉，<br>一部生活史。</h1><p data-zh="从中国�
 <dialog id="about-dialog" class="about-dialog"><button class="close icon-button" aria-label="关闭说明">×</button><div class="eyebrow">ABOUT THE COLLECTION</div><h2>看图，也看见证据的出处。</h2><p>本资料库收录人工筛选的论文图版，保留原始图版、图注和题录，通过双语检索连接现代参照、考古材料与遗址信息。</p><dl><dt>收录范围</dt><dd id="about-counts"></dd><dt>双语说明</dt><dd>原始题录、作者和期刊名称保留不变。新增中英译题为辅助译题，非官方译名；新增图注译文由本地 Qwen3-4B 模型起草，尚未逐条人工审定。原文始终可查看。</dd><dt>图像清晰度</dt><dd>原始 PNG 文件未重新压缩。列表加载单独生成的缩略预览图，查看细节时可载入或下载原图。</dd><dt>地图说明</dt><dd>底图为 Natural Earth 1:110m 自然陆地轮廓，不绘制行政边界。实心与空心符号区分文献坐标与近似位置；点位来源、精度及原坐标系逐条保留。</dd><dt>数据与存储</dt><dd>本机使用 SQLite 存储论文、图版和遗址关联。公开前端支持静态元数据与可替换 API，原图存储地址独立配置，后续可迁移至对象存储。</dd></dl><div class="about-links"><a href="data/catalog.json" download>下载元数据 JSON</a></div></dialog>
 <dialog id="compare-dialog" class="compare-dialog"><button class="close icon-button" aria-label="关闭比较">×</button><h2>图版比较 / Compare plates</h2><div id="compare-content"></div></dialog>
 <div id="toast" class="toast" role="status" hidden></div>
-<script src="config.js?v=20261020c"></script><script type="module" src="app.js?v=20261112-hide-coordinates"></script>
+<script src="config.js?v=20261020c"></script><script type="module" src="app.js?v=20261112-domestic"></script>
 </body></html>

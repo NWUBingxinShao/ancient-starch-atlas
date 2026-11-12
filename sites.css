@@ -31,3 +31,4 @@
 .site-registration{padding:10px 16px;text-align:center;font-size:12px;line-height:1.8;color:var(--muted);background:var(--paper)}
 .site-registration a{display:inline-block;padding:4px 0}
 @media(max-width:760px){body[data-view="map"] .site-registration{position:fixed;left:0;right:0;bottom:calc(68px + env(safe-area-inset-bottom));z-index:24;padding:0 8px;font-size:11px;line-height:1.5}body[data-view="map"] .site-registration a{padding:2px 0}}
+@media(min-width:761px){body[data-view="map"] .site-registration{position:fixed;left:0;right:0;bottom:0;z-index:24;padding:0 16px;border-top:1px solid var(--line)}body[data-view="map"] .site-registration a{text-decoration:underline;text-underline-offset:3px}body[data-view="map"] #map-view .map-bottom{bottom:32px}}@media(min-width:901px){body[data-view="map"] #map-view .site-sidebar{bottom:102px}body[data-view="map"] #map-view .atlas-rail{bottom:104px}}
