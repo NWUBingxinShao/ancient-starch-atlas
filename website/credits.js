@@ -1,4 +1,4 @@
-/* Rolling credits adapted from the supplied player; a single acknowledgements experience. */
+/* Rolling acknowledgements and playback controls. */
 (() => {
   'use strict';
   const db = window.STARCH_ATLAS_LITERATURE;
@@ -36,6 +36,7 @@
   const chapters = [
     ['preface', '致谢序言', 'Preface'],
     ['authors', '全部文献作者', 'Authors of the literature'],
+    ['advisors', '学术顾问', 'Academic advisors'],
     ['team', '数据库建设与技术服务', 'Database development & technical services'],
     ['support', '机构与项目支持', 'Institutional & project support'],
     ['copyright', '版权与使用说明', 'Copyright & use'],
@@ -133,7 +134,7 @@
       '谨以此页，致敬所有致力于探索古代人类生活与植物利用历史的研究者。',
     ] : [
       'Human knowledge and use of plant resources offer vital clues to prehistoric subsistence, the origins of agriculture and social development. Starch analysis and related plant microremain studies provide evidence for reconstructing ancient diets, plant use and technological activities.',
-      'This database draws on the accumulated work of many scholars in China. From modern plant starch morphology to the extraction, identification and interpretation of archaeological microremains, and from stone-tool function to ancient diets and agricultural development, each study advances our understanding of the relationship between people and plants.',
+      'This database draws on the accumulated work of many scholars. From modern plant starch morphology to the extraction, identification and interpretation of archaeological microremains, and from stone-tool function to ancient diets and agricultural development, each study advances our understanding of the relationship between people and plants.',
       'We sincerely thank all authors of the publications collected and cited in this database. Their sustained research makes it possible to bring together, organise and compare starch evidence from different regions, sites and publications.',
       'We also thank the researchers and colleagues who helped with source organisation, academic discussions, plate checking, database development and technical support.',
       'This page honours everyone working to understand ancient human life and the history of plant use.',
@@ -144,6 +145,12 @@
     const grid = node('div', 'roll-names');
     for (const name of roster) grid.append(node('div', 'roll-name' + (isZH(name) ? '' : ' latin'), name));
     names.append(grid);
+    const advisors = section('advisors', 'ACADEMIC ADVISORS');
+    const advisorNames = node('p', 'roll-team');
+    advisorNames.append(node('span', 'advisor-name', tr('杨晓燕教授', 'Prof. Yang Xiaoyan')),
+      document.createTextNode(tr('、', ' · ')), node('wbr'),
+      node('span', 'advisor-name', tr('万智巍副教授', 'Assoc. Prof. Wan Zhiwei')));
+    advisors.append(advisorNames);
     const team = section('team', 'DATABASE DEVELOPMENT & TECHNICAL SERVICES');
     team.append(node('p', 'roll-team', '马志坤　邵炳鑫'));
     const support = section('support', 'INSTITUTIONAL & PROJECT SUPPORT');

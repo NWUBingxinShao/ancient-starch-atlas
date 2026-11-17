@@ -28,10 +28,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Configure R2 image source
+      - name: Validate release
         run: |
-          sed -i 's#"mediaBaseUrl": "/"#"mediaBaseUrl": "https://ancient-starch-atlas.jiyun2485190686.workers.dev"#' website/config.js
-          grep mediaBaseUrl website/config.js
+          node scripts/check-release.mjs
+          node --test r2-worker/test_worker.mjs
+
+      - name: Use production image service
+        run: |
+          node --input-type=module - <<'JS'
+          import fs from 'node:fs';
+          import vm from 'node:vm';
+          const file = 'website/config.js';
+          const context = {window: {}};
+          vm.runInNewContext(fs.readFileSync(file, 'utf8'), context);
+          const config = context.window.ATLAS_CONFIG;
+          config.mediaBaseUrl = 'https://ancientstarch.cn';
+          fs.writeFileSync(file, 'window.ATLAS_CONFIG = ' + JSON.stringify(config, null, 2) + ';\n');
+          JS
 
       - name: Configure Pages
         uses: actions/configure-pages@v5

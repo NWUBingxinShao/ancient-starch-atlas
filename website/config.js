@@ -3,6 +3,6 @@ window.ATLAS_CONFIG = {
   "mediaBaseUrl": "/",
   "previewBaseUrl": "",
   "apiBaseUrl": "",
-  "canonicalBaseUrl": "",
+  "canonicalBaseUrl": "https://ancientstarch.cn/",
   "pageSize": 24
 };

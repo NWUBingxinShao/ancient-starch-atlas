@@ -21502,7 +21502,6 @@
   "hotspots": {
     "S011_51ebdda2b100_S011-P0005-B000": {
       "image_sha256": "67ac29e03b9b7400bdc05bb519542a5b210f4860d222c5633ad6a6c9e7bbb72e",
-      "position_review": "原图分图标号目视定位；不代表专家植物鉴定",
       "entries": [
         {
           "id": "a",
@@ -21868,7 +21867,6 @@
     },
     "S249_7b4d6e602263_S249-F07": {
       "image_sha256": "2425642cbc6bf9baa3bc624c76f84df5e373f39086c491f21578e8461c8d3820",
-      "position_review": "原图分图标号目视定位；不代表专家植物鉴定",
       "entries": [
         {
           "id": "A",
@@ -22333,7 +22331,6 @@
     },
     "S282_bcb209d9dd37_S282-F03": {
       "image_sha256": "df856addb959b0d527d9ca011adc32da49e4bae8170e0915f4d4d0b2fed13b38",
-      "position_review": "原图分图标号目视定位；不代表专家植物鉴定",
       "entries": [
         {
           "id": "a",

@@ -1,4 +1,4 @@
-# This repository is for the public display release only.
+# Local workspace and build artifacts
 private/
 database/
 originals/
@@ -22,3 +22,21 @@ __pycache__/
 .DS_Store
 Thumbs.db
 *.csv
+*.pub
+*.p12
+*.pfx
+*.jks
+*.log
+known_hosts
+id_rsa*
+id_ed25519*
+*credentials*.json
+*secret*.json
+*.tar
+*.tar.gz
+.ssh/
+.aws/
+.aliyun/
+.wrangler/
+dist/
+build/
