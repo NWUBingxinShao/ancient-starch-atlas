@@ -36,6 +36,7 @@
   const chapters = [
     ['preface', '致谢序言', 'Preface'],
     ['authors', '全部文献作者', 'Authors of the literature'],
+    ['advisors', '学术顾问', 'Academic advisors'],
     ['team', '数据库建设与技术服务', 'Database development & technical services'],
     ['support', '机构与项目支持', 'Institutional & project support'],
     ['copyright', '版权与使用说明', 'Copyright & use'],
@@ -144,6 +145,12 @@
     const grid = node('div', 'roll-names');
     for (const name of roster) grid.append(node('div', 'roll-name' + (isZH(name) ? '' : ' latin'), name));
     names.append(grid);
+    const advisors = section('advisors', 'ACADEMIC ADVISORS');
+    const advisorNames = node('p', 'roll-team');
+    advisorNames.append(node('span', 'advisor-name', tr('杨晓燕教授', 'Prof. Yang Xiaoyan')),
+      document.createTextNode(tr('、', ' · ')), node('wbr'),
+      node('span', 'advisor-name', tr('万智巍副教授', 'Assoc. Prof. Wan Zhiwei')));
+    advisors.append(advisorNames);
     const team = section('team', 'DATABASE DEVELOPMENT & TECHNICAL SERVICES');
     team.append(node('p', 'roll-team', '马志坤　邵炳鑫'));
     const support = section('support', 'INSTITUTIONAL & PROJECT SUPPORT');
