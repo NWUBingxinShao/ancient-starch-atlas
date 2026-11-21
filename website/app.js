@@ -114,9 +114,9 @@ function renderDetail(){
  text($('#detail-meta'),`${p.id} / ${t('图','Fig.')} ${f.number} · ${p.year} · PNG ${fileSize(f.image_bytes)}`);
  text($('#detail-kicker'),t('图版档案','PLATE ARCHIVE'));
  text($('#show-panel-guide'),t(`分图释读与依据 · ${f.panel_annotations?.length||0} 条对应 ↓`,`Panel guide · ${f.panel_annotations?.length||0} entries ↓`));text($('#detail-title'),label(f));text($('#detail-title-alt'),otherTitle(f));
- $('#detail-image').src=preview(f);$('#detail-image').alt=label(f);$('#download-image').href=media(f);$('#download-image').download=f.paper_id+'_Fig_'+f.number+'.png';
+ $('#detail-image').src=preview(f);$('#detail-image').alt=label(f);
  text($('#load-original'),t('载入高清原图','Load full-resolution image'));$('#load-original').disabled=false;text($('#image-state'),t('当前显示预览图','Showing a preview'));
- text($('#download-image'),t('下载原图 ↓','Download original ↓'));text($('#copy-caption'),t('复制当前图注','Copy caption'));text($('#copy-citation'),t('复制题录','Copy citation'));
+ text($('#copy-caption'),t('复制当前图注','Copy caption'));text($('#copy-citation'),t('复制题录','Copy citation'));
  text($('#detail-paper-title'),title(p));$('#detail-paper-title').onclick=()=>openPaper(p.key);text($('#detail-citation'),p.citation_original);
  const doi=doiUrl(p.doi);$('#detail-doi').hidden=!doi;if(doi)$('#detail-doi').href=doi;
  text($('#detail-provenance'),t(`原PDF页码：${f.pdf_pages.join('、')} · SHA-256 ${f.image_sha256.slice(0,16)}…`,`PDF pages: ${f.pdf_pages.join(', ')} · SHA-256 ${f.image_sha256.slice(0,16)}…`));
@@ -152,7 +152,17 @@ function resetImage(){imageScale=1;imageX=0;imageY=0;imageTransform();researchTo
 function zoomImage(mult){imageScale=Math.max(.5,Math.min(10,imageScale*mult));imageTransform()}
 function focusImageBoxes(boxes){if(!boxes?.length)return;const frame=$('#image-frame'),stage=$('#image-stage'),x0=Math.min(...boxes.map(b=>b[0])),x1=Math.max(...boxes.map(b=>b[2])),y0=Math.min(...boxes.map(b=>b[1])),y1=Math.max(...boxes.map(b=>b[3]));imageScale=Math.min(8,Math.max(1,Math.min(stage.clientWidth*.85/(frame.clientWidth*(x1-x0)),stage.clientHeight*.85/(frame.clientHeight*(y1-y0)))));imageX=-(.5*(x0+x1)-.5)*frame.clientWidth*imageScale;imageY=-(.5*(y0+y1)-.5)*frame.clientHeight*imageScale;imageTransform();stage.scrollIntoView({block:'center',behavior:'smooth'});}
 function updateCompare(){$('#compare-bar').hidden=!state.compare.size;text($('#compare-count'),t(`已选 ${state.compare.size} / 2 幅图版`,`${state.compare.size} / 2 selected`));$('#compare-open').disabled=state.compare.size<2}
-function openCompare(){const content=$('#compare-content');content.replaceChildren();for(const id of state.compare){const f=figureById.get(id),pane=el('div','compare-pane'),a=el('a','text-button',t('下载高清原图 ↓','Download original ↓'));a.href=media(f);a.download=true;pane.append(makeImage(f,false),el('h3','',f.paper_id+' · '+label(f)),a,el('p','',f['caption_'+state.lang]));content.append(pane)}$('#compare-dialog').showModal()}
+function openCompare(){
+ const content=$('#compare-content');
+ content.replaceChildren();
+ for(const id of state.compare){
+  const figure=figureById.get(id),pane=el('div','compare-pane');
+  pane.append(makeImage(figure,false),el('h3','',figure.paper_id+' · '+label(figure)),
+   el('p','',figure['caption_'+state.lang]));
+  content.append(pane);
+ }
+ $('#compare-dialog').showModal();
+}
 let hoverSite=null;let mapReady=false,land=[],mapWidth=1,mapHeight=1,mapScale=1,mapReferenceScale=1,mapX=0,mapY=0,mapDots=[],mapDrag=null,selectedSite=null;
 const project=(lon,lat)=>[(lon+180)/360*1000,(1-Math.log(Math.tan(Math.PI/4+Math.max(-85,Math.min(85,lat))*Math.PI/360))/Math.PI)/2*1000];
 function fitMap(bounds){const a=project(bounds[0],bounds[3]),b=project(bounds[2],bounds[1]);const phone=mapWidth<=760,left=mapWidth>=1500?420:mapWidth>=1200?360:285,right=mapWidth>=1900?430:mapWidth>=1500?375:mapWidth>=1200?335:300;const vw=mapWidth>1050?mapWidth-left-right:mapWidth,cx=mapWidth>1050?left+vw/2:mapWidth/2,top=phone?155:0,bottom=phone?86:0,vh=Math.max(160,mapHeight-top-bottom);mapScale=Math.min(vw/(b[0]-a[0]),vh*.94/(b[1]-a[1]))*.9;mapReferenceScale=mapScale;mapX=cx-(a[0]+b[0])/2*mapScale;mapY=top+vh/2-(a[1]+b[1])/2*mapScale;drawMap()}
@@ -271,7 +281,7 @@ function bind(){
  for(const id of ['about','footer-about'])$('#'+id).onclick=()=>$('#about-dialog').showModal();
  $$('[data-caption]').forEach(b=>b.onclick=()=>{captionMode=b.dataset.caption;renderCaption()});$('#copy-caption').onclick=()=>copy($('#detail-caption').textContent);$('#copy-citation').onclick=()=>copy(paperByKey.get(detail.paper_key).citation_original);
  $('#detail-prev').onclick=()=>stepFigure(-1);$('#detail-next').onclick=()=>stepFigure(1);
- $('#load-original').onclick=()=>{if(!detail)return;const id=detail.id;$('#load-original').disabled=true;text($('#image-state'),t('正在载入高清原图…','Loading the full-resolution original…'));const im=new Image();im.onload=()=>{if(detail?.id!==id)return;$('#detail-image').src=im.src;text($('#image-state'),t(`原图 ${im.naturalWidth} × ${im.naturalHeight} px`,`Original ${im.naturalWidth} × ${im.naturalHeight} px`));text($('#load-original'),t('已载入原图','Original loaded'));resetImage()};im.onerror=async()=>{await catalogSync?.check(true);if(detail?.id!==id)return;$('#load-original').disabled=false;text($('#image-state'),t('原图加载失败，可重试或下载','Unable to load; retry or download the original'))};im.src=media(detail)};
+ $('#load-original').onclick=()=>{if(!detail)return;const id=detail.id;$('#load-original').disabled=true;text($('#image-state'),t('正在载入高清原图…','Loading the full-resolution original…'));const im=new Image();im.onload=()=>{if(detail?.id!==id)return;$('#detail-image').src=im.src;text($('#image-state'),t(`原图 ${im.naturalWidth} × ${im.naturalHeight} px`,`Original ${im.naturalWidth} × ${im.naturalHeight} px`));text($('#load-original'),t('已载入原图','Original loaded'));resetImage()};im.onerror=async()=>{await catalogSync?.check(true);if(detail?.id!==id)return;$('#load-original').disabled=false;text($('#image-state'),t('原图加载失败，请重试','Unable to load the original. Try again.'))};im.src=media(detail)};
  $('#image-plus').onclick=()=>zoomImage(1.25);$('#image-minus').onclick=()=>zoomImage(.8);$('#image-reset').onclick=resetImage;
  const stage=$('#image-stage');stage.onwheel=e=>{e.preventDefault();zoomImage(e.deltaY<0?1.12:1/1.12)};
  bindPanZoom(stage,{getTransform:()=>({scale:imageScale,x:imageX,y:imageY}),setTransform:p=>{imageScale=p.scale;imageX=p.x;imageY=p.y;imageTransform()},minScale:.5,maxScale:10,centered:true,blocked:()=>stage.classList.contains('panel-marking')});
